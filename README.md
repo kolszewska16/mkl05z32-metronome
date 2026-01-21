@@ -42,13 +42,13 @@ Connect via Serial Terminal  (Settings: **28800 baud, 8N1**). Use the following 
 ## Getting Started
 1. Clone this repository
 2. Open `project/*.uvprojx` in **Keil uVision 5**
-3. Ensure you have the **Kinteis KLxx Series Device Family Pack** installed
-4. Build the project and flash it to the board using the onboard OpendSDA debugger
+3. Ensure you have the **Kinetis KLxx Series Device Family Pack** installed
+4. Build the project and flash it to the board using the J-Link OpenSDA debugger
 5. Open your terminal of choice and start practicing
 
 ## Debugger Configuration (J-Link OpenSDA)
 This board uses **J-Link OpenSDA firmware**. To flash and debug:
-1. Opend **Options for Target** (magic wand icon) -> **Debug** tab
+1. Open **Options for Target** (magic wand icon) -> **Debug** tab
 2. Select **J-Link/J-Trace Cortex** from the drop-down list
-3. Click **Settings** and verify that the device is recognized in the **SW Device** list and the speed is set **2MHz**
+3. Click **Settings** and verify that the device is recognized in the **SW Device** list and the **Max Clock** is set to **2MHz**
 4. In the **Flash Download** tab, ensure "Reset and Run" is checked
