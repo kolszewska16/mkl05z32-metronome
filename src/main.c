@@ -18,7 +18,7 @@ char ON[] = "ON";
 char OFF[] = "OFF";
 char UP[] = "UP";
 char DOWN[] = "DOWN";
-char error[] = "Wrong command";
+char Error[] = "Wrong command";
 char Too_Long[] = "Too long string";
 
 uint8_t rx_buf_pos = 0;
@@ -151,9 +151,19 @@ int main(void) {
 						UART0_SendStr("Min BPM reached");
 					}
 				}
-			}
+				else {
+					for(i = 0; Error[i] != 0; i++) {
+						while(!(UART0->S1 & UART0_S1_TDRE_MASK));
+						UART0->D = Error[i];
+					}
+						while(!(UART0->S1 & UART0_S1_TDRE_MASK));
+						UART0->D = LF;
+						while(!(UART0->S1 & UART0_S1_TDRE_MASK));
+						UART0->D = CR;
+				}
 			rx_buf_pos=0;
 			rx_FULL=0;
+			}
 		}
-	}
+	}	
 }
