@@ -18,28 +18,6 @@ void UART0_SendNum(int num) {
 	UART0_SendStr(str);
 }
 
-void PWM_BuzzerInit(void) {
-	SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK;
-	SIM->SCGC6 |= SIM_SCGC6_TPM1_MASK;
-	
-	PORTB->PCR[0] = PORT_PCR_MUX(3);
-	TPM1->SC |= TPM_SC_PS(7);
-	TPM1->MOD = 82;
-	
-	TPM1->CONTROLS[0].CnSC = TPM_CnSC_MSB_MASK | TPM_CnSC_ELSB_MASK;
-	TPM1->CONTROLS[0].CnV = 0;
-	
-	TPM1->SC |= TPM_SC_CMOD(1);
-}
-
-void BuzzerOn(void) {
-	TPM1->CONTROLS[0].CnV = (TPM1->MOD / 2);
-}
-
-void BuzzerOff(void) {
-	TPM1->CONTROLS[0].CnV = 0;
-}
-
 void Metronome_TimerInit(void) {
 	SIM->SCGC6 |= SIM_SCGC6_TPM0_MASK;
 	SIM->SOPT2 |= SIM_SOPT2_TPMSRC(1);
@@ -57,7 +35,7 @@ void Metronome_TimerInit(void) {
 }
 
 void CalcInterval(void) {
-	beat_interval_ms = 60000 / current_bpm;
+	beat_interval_ms = 120000 / current_bpm;
 }
 
 void Update_LCD_Display(void) {

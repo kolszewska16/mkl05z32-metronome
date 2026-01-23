@@ -43,14 +43,14 @@ void UART0_IRQHandler() {
 					rx_buf[rx_buf_pos] = temp;
 					rx_buf_pos++;
 					if(rx_buf_pos == 16)
-						too_long=1;
+						too_long = 1;
 				}
 			}
 			else {
 				if(!too_long) {
 					rx_buf[rx_buf_pos] = 0;
 				}
-				rx_FULL=1;
+				rx_FULL = 1;
 			}
 		}
 	NVIC_EnableIRQ(UART0_IRQn);
@@ -65,11 +65,8 @@ void TPM0_IRQHandler(void) {
 			ms_counter++;
 			
 			if(ms_counter >= beat_interval_ms) {
-				ms_counter = 0;
-				
-				PTB->PCOR = (1 << 8);
-				BuzzerOn();
-				
+				ms_counter = 0;				
+				PTB->PCOR = (1 << 8);				
 				pulse_active = 1;
 				pulse_timer = 50;
 			}
@@ -79,7 +76,6 @@ void TPM0_IRQHandler(void) {
 			pulse_timer--;
 			if(pulse_timer == 0) {
 				PTB->PSOR = (1 << 8);
-				BuzzerOff();
 				pulse_active = 0;
 			}
 		}
@@ -93,12 +89,11 @@ int main(void) {
 	UART0_Init();
 	LCD1602_Init();
 	
-	PWM_BuzzerInit();
 	Metronome_TimerInit();
 	
 	CalcInterval();
 	Update_LCD_Display();
-	UART0_SendStr("Metronome ready. Type: ON, OFF, UP or DOWN.");
+	UART0_SendStr("Metronome ready. Type: ON, OFF, UP, DOWN or BPM value");
 	
 	while(1) {
 		if(rx_FULL) {
@@ -123,7 +118,6 @@ int main(void) {
 				else if(strcmp(rx_buf, OFF) == 0) {
 					is_running = 0;
 					PTB->PSOR = (1 << 8);
-					BuzzerOff();
 					Update_LCD_Display();
 					UART0_SendStr("Metronome stopped");
 				}
@@ -149,6 +143,31 @@ int main(void) {
 					}
 					else {
 						UART0_SendStr("Min BPM reached");
+					}
+				}
+				else if(rx_buf[0] >= '0' && rx_buf[0] <= '9') {
+					uint8_t is_numeric = 1;
+					for(i = 0; rx_buf[i] != 0; i++) {
+						if(rx_buf[i] < '0' || rx_buf[i] > '9') {
+							is_numeric = 0;
+							break;
+						}
+					}
+					if(is_numeric) {
+						int val = atoi(rx_buf);
+						if(val >= BPM_MIN && val <= BPM_MAX) {
+							current_bpm = (uint16_t)val;
+							CalcInterval();
+							Update_LCD_Display();
+							UART0_SendStr("New tempo set");
+							UART0_SendNum(current_bpm);
+						}
+						else {
+							UART0_SendStr("Out of range");
+						}
+					}
+					else {
+						UART0_SendStr("Digits only");
 					}
 				}
 				else {
